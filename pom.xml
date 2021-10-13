@@ -23,8 +23,8 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/thebesteric/mocker-starte</url>
-        <connection>https://github.com/thebesteric/mocker-starter.git</connection>
+        <url>https://github.com/thebesteric/versioner-starter</url>
+        <connection>https://github.com/thebesteric/versioner-starter.git</connection>
     </scm>
 
     <developers>
