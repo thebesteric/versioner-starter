@@ -1,6 +1,5 @@
 package io.github.thebesteric.framework.versioner.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 import io.github.thebesteric.framework.versioner.core.VersionerHandler;
 import io.github.thebesteric.framework.versioner.core.VersionerManager;
@@ -47,8 +46,9 @@ public class VersionerFilter implements Filter {
                     tidyVersion(versionInfo.getExcludeFields(), jsonObject);
                 }
                 servletResponse.getOutputStream().write(jsonObject.toString().getBytes(StandardCharsets.UTF_8));
-            } catch (JsonProcessingException ex) {
-                filterChain.doFilter(request, response);
+            } catch (Exception ex) {
+                log.debug("versioner parse error: {}", ex.getMessage());
+                servletResponse.getOutputStream().write(origin.getBytes(StandardCharsets.UTF_8));
             }
         } else {
             filterChain.doFilter(request, response);
