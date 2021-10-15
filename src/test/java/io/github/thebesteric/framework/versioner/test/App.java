@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.versioner.annotation.EnableVersioner;
 import io.github.thebesteric.framework.versioner.annotation.Version;
 import io.github.thebesteric.framework.versioner.annotation.Versioner;
 import io.github.thebesteric.framework.versioner.annotation.Versions;
+import io.github.thebesteric.framework.versioner.utils.VersionerUtils;
 import lombok.Data;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +27,7 @@ public class App {
             user.setUsername("test");
             user.setPassword("123");
             user.setAge(12);
+            System.out.println("Version = " + VersionerUtils.get());
             return user;
         }
 
@@ -37,6 +39,7 @@ public class App {
             user.setPassword("123");
             user.setAge(12);
             user.setGender(1);
+            System.out.println("Version = " + VersionerUtils.get());
             return user;
         }
 
@@ -48,6 +51,7 @@ public class App {
             user.setPassword("123");
             user.setAge(12);
             user.setGender(1);
+            System.out.println("Version = " + VersionerUtils.get());
             return user;
         }
 
@@ -58,6 +62,7 @@ public class App {
             user.setPassword("123");
             user.setAge(12);
             user.setGender(1);
+            System.out.println("Version = " + VersionerUtils.get());
             return R.success(user);
         }
 
@@ -69,6 +74,7 @@ public class App {
             user.setPassword("123");
             user.setAge(12);
             user.setGender(1);
+            System.out.println("Version = " + VersionerUtils.get());
             return R.success(user);
         }
 
@@ -80,6 +86,7 @@ public class App {
             user.setPassword("123");
             user.setAge(12);
             user.setGender(1);
+            System.out.println("Version = " + VersionerUtils.get());
             return R.success(user);
         }
 
