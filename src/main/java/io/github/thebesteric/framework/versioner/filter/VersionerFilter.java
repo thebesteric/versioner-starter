@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import io.github.thebesteric.framework.versioner.core.VersionerHandler;
 import io.github.thebesteric.framework.versioner.core.VersionerManager;
 import io.github.thebesteric.framework.versioner.utils.JsonUtils;
+import io.github.thebesteric.framework.versioner.utils.VersionerUtils;
 import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class VersionerFilter implements Filter {
 
         VersionerManager.VersionInfo versionInfo = versionManager.get(requestURI);
         if (versionInfo != null) {
+            VersionerUtils.set(versionInfo.getVersion());
             ResponseWrapper responseWrapper = new ResponseWrapper(response);
             filterChain.doFilter(request, responseWrapper);
             byte[] content = responseWrapper.getContent();
@@ -49,6 +51,8 @@ public class VersionerFilter implements Filter {
             } catch (Exception ex) {
                 log.debug("versioner parse error: {}", ex.getMessage());
                 servletResponse.getOutputStream().write(origin.getBytes(StandardCharsets.UTF_8));
+            } finally {
+                VersionerUtils.remove();
             }
         } else {
             filterChain.doFilter(request, response);
