@@ -8,3 +8,13 @@
 5. DO 的字段上或 getter 方法上增加 @Version(exclude={"v1", "v2"}) 标志可不支持版本
 
 拦截 controller 层，拿到返回值，根据 key 来反射，替换对象
+
+- v1.0.0
+  - 初版
+
+- v1.0.1
+  - 修复非 Json 格式的返回值，报错的问题
+
+- v1.0.2
+  - 增加 VersionUtils 用于获取当前请求的版本信息
+  - 判断是否是 Json 返回形式，仅处理 @ResponseBody 格式的返回信息
