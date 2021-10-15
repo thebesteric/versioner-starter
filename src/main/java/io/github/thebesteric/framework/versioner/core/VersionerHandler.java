@@ -29,6 +29,10 @@ public class VersionerHandler implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean.getClass().isAnnotationPresent(Controller.class) || bean.getClass().isAnnotationPresent(RestController.class)) {
             for (Method method : bean.getClass().getDeclaredMethods()) {
+                if (!method.isAnnotationPresent(ResponseBody.class)
+                        && !method.getDeclaringClass().isAnnotationPresent(RestController.class)) {
+                    return bean;
+                }
                 Versioner versioner = method.getAnnotation(Versioner.class);
                 if (versioner != null) {
                     String version = versioner.value();
