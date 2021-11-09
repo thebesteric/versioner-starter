@@ -3,8 +3,9 @@ package io.github.thebesteric.framework.versioner.core;
 import io.github.thebesteric.framework.versioner.annotation.Version;
 import io.github.thebesteric.framework.versioner.annotation.Versioner;
 import io.github.thebesteric.framework.versioner.annotation.Versions;
+import io.github.thebesteric.framework.versioner.domain.FieldDefinition;
+import io.github.thebesteric.framework.versioner.domain.NoneType;
 import io.github.thebesteric.framework.versioner.utils.ReflectUtils;
-import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -15,15 +16,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
-public class VersionerHandler implements BeanPostProcessor {
+public class VersionHandler implements BeanPostProcessor {
 
-    private final VersionerManager versionManager;
-    public static final String KEY_SEPARATOR = ":";
+    private final VersionManager versionManager;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -53,9 +56,6 @@ public class VersionerHandler implements BeanPostProcessor {
                         return bean;
                     }
 
-                    Set<Pair<String, Field>> includeFields = new HashSet<>();
-                    Set<Pair<String, Field>> excludeFields = new HashSet<>();
-
                     if (StringUtils.hasLength(key)) {
                         try {
                             Field declaredField;
@@ -78,10 +78,11 @@ public class VersionerHandler implements BeanPostProcessor {
                     }
 
                     // collect class fields
-                    collectField(clazz, version, "", includeFields, excludeFields);
+                    VersionManager.VersionInfo versionInfo = versionManager.get(clazz, version);
+                    Set<FieldDefinition> fieldDefinitions = versionInfo == null ? collect(version, clazz, new HashSet<>()) : versionInfo.getFieldDefinitions();
 
                     for (String uri : uris) {
-                        versionManager.put(key.trim(), clazz, uri, versioner.value(), includeFields, excludeFields);
+                        versionManager.put(key.trim(), clazz, uri, versioner.value(), fieldDefinitions);
                     }
 
                 }
@@ -90,25 +91,47 @@ public class VersionerHandler implements BeanPostProcessor {
         return bean;
     }
 
-    public void collectField(Class<?> clazz, String version, String parentFieldName,
-                             Set<Pair<String, Field>> includeFields, Set<Pair<String, Field>> excludeFields) {
+    public Set<FieldDefinition> collect(String version, Class<?> clazz, Set<FieldDefinition> fieldDefinitions) {
         for (Field declaredField : clazz.getDeclaredFields()) {
             Version fieldVersion = declaredField.getAnnotation(Version.class);
-            if (fieldVersion != null && !Arrays.asList(fieldVersion.value()).contains(version)) {
-                excludeFields.add(new Pair<>(parentFieldName, declaredField));
-                continue;
+            FieldDefinition.FieldType fieldType;
+            FieldDefinition fieldDefinition = null;
+            boolean showBeRemove = false;
+            String[] versions = fieldVersion == null ? null : fieldVersion.value();
+            if (fieldVersion != null && !Arrays.asList(versions).contains(version)) {
+                showBeRemove = true;
             }
-            if (ReflectUtils.isPoJo(declaredField.getType()) && declaredField.getType().isAnnotationPresent(Versions.class)) {
-                if (StringUtils.hasLength(parentFieldName)) {
-                    parentFieldName += KEY_SEPARATOR + declaredField.getName();
-                } else {
-                    parentFieldName += declaredField.getName();
+            if (ReflectUtils.isPoJo(declaredField.getType())) {
+                fieldType = FieldDefinition.FieldType.POJO;
+                Set<FieldDefinition> subFieldDefinitions = collect(version, declaredField.getType(), new HashSet<>());
+                fieldDefinition = new FieldDefinition(versions, declaredField, fieldType, subFieldDefinitions, showBeRemove);
+            } else if (ReflectUtils.isCollection(declaredField.getType())) {
+                fieldType = FieldDefinition.FieldType.COLLECTION;
+                Type genericType = declaredField.getGenericType();
+                if (genericType instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) genericType;
+                    Class<?> actualTypeArgument = (Class<?>) pt.getActualTypeArguments()[0];
+                    Set<FieldDefinition> subFieldDefinitions = collect(version, actualTypeArgument, new HashSet<>());
+                    fieldDefinition = new FieldDefinition(versions, declaredField, fieldType, subFieldDefinitions, showBeRemove);
                 }
-                collectField(declaredField.getType(), version, parentFieldName, includeFields, excludeFields);
+            } else if (ReflectUtils.isMap(declaredField.getType())) {
+                fieldType = FieldDefinition.FieldType.MAP;
+                Type genericType = declaredField.getGenericType();
+                if (genericType instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) genericType;
+                    Class<?> actualKeyTypeArgument = (Class<?>) pt.getActualTypeArguments()[0];
+                    Class<?> actualValueTypeArgument = (Class<?>) pt.getActualTypeArguments()[1];
+                    Set<FieldDefinition> subKeyFieldDefinitions = collect(version, actualKeyTypeArgument, new HashSet<>());
+                    Set<FieldDefinition> subValueFieldDefinitions = collect(version, actualValueTypeArgument, new HashSet<>());
+                    fieldDefinition = new FieldDefinition(versions, declaredField, fieldType, subValueFieldDefinitions, showBeRemove);
+                }
             } else {
-                includeFields.add(new Pair<>(parentFieldName, declaredField));
+                fieldType = FieldDefinition.FieldType.BASIC;
+                fieldDefinition = new FieldDefinition(versions, declaredField, fieldType, null, showBeRemove);
             }
+            fieldDefinitions.add(fieldDefinition);
         }
+        return fieldDefinitions;
     }
 
     private Set<String> getRequestUri(Method method) {
@@ -170,9 +193,7 @@ public class VersionerHandler implements BeanPostProcessor {
                 }
             }
         }
-
         return uris;
-
     }
 
 
