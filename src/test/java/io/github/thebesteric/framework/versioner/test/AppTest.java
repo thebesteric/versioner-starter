@@ -17,8 +17,8 @@ public class AppTest {
     @Test
     public void test() {
         App.TestController testController = applicationContext.getBean(App.TestController.class);
-        System.out.println(testController.test());
-        System.out.println(testController.testV1());
-        System.out.println(testController.testV2());
+        // System.out.println(testController.test());
+        // System.out.println(testController.testV1());
+        // System.out.println(testController.testV2());
     }
 }
