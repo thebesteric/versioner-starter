@@ -7,5 +7,4 @@ import java.lang.annotation.*;
 @Documented
 public @interface Version {
     String[] value();
-    String[] exclude() default {};
 }
