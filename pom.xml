@@ -6,7 +6,7 @@
 
     <groupId>io.github.thebesteric.framework</groupId>
     <artifactId>versioner-starter</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>mocker starter</name>
