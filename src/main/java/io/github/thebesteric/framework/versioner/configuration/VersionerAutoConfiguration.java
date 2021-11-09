@@ -1,7 +1,7 @@
 package io.github.thebesteric.framework.versioner.configuration;
 
-import io.github.thebesteric.framework.versioner.core.VersionerHandler;
-import io.github.thebesteric.framework.versioner.core.VersionerManager;
+import io.github.thebesteric.framework.versioner.core.VersionHandler;
+import io.github.thebesteric.framework.versioner.core.VersionManager;
 import io.github.thebesteric.framework.versioner.core.VersionerInitialization;
 import io.github.thebesteric.framework.versioner.filter.VersionerFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -26,7 +26,7 @@ public class VersionerAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public FilterRegistrationBean filterRegister(VersionerManager versionManager) {
+    public FilterRegistrationBean filterRegister(VersionManager versionManager) {
         FilterRegistrationBean frBean = new FilterRegistrationBean();
         frBean.setName(FILTER_NAME);
         frBean.setOrder(FILTER_ORDER);
@@ -36,12 +36,12 @@ public class VersionerAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public VersionerManager versionManager() {
-        return new VersionerManager();
+    public VersionManager versionManager() {
+        return new VersionManager();
     }
 
     @Bean
-    public VersionerHandler versionHandler(VersionerManager versionManager) {
-        return new VersionerHandler(versionManager);
+    public VersionHandler versionHandler(VersionManager versionManager) {
+        return new VersionHandler(versionManager);
     }
 }
