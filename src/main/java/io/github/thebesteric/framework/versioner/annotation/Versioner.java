@@ -1,6 +1,6 @@
 package io.github.thebesteric.framework.versioner.annotation;
 
-import io.github.thebesteric.framework.versioner.core.NoneType;
+import io.github.thebesteric.framework.versioner.domain.NoneType;
 
 import java.lang.annotation.*;
 
