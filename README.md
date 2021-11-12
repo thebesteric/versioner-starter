@@ -11,12 +11,11 @@
 PS: 如果返回值为通用类型，则需要指定返回值包装数据的 key，以及 key 所返回的类型
 > @Versioner(value = "v1", key = "data", type = User.class)
 ```java
-@Data
-@Versions
-public static class User {
+@RestController
+public class UserController {
     @Versioner(value = "v1", key = "data", type = User.class)
     @GetMapping("/r/v1")
-    public R rV1(String id) {
+    public R getUserV1(String id) {
         User user = userService.getUser(id);
         return R.success(user);
     }
@@ -25,7 +24,25 @@ public static class User {
 
 ### Example
 
-#### Domain
+#### Controller
+```java
+@RestController
+public static class TestController {
+    @Versioner("v1")
+    @GetMapping("/test/v1")
+    public User testV1(String id) {
+        return userService.getUser(id);
+    }
+
+    @Versioner("v2")
+    @GetMapping("/test/v2")
+    public User testV2(String id) {
+        return userService.getUser(id);
+    }
+}
+```
+
+#### Domain Design
 ```java
 @Data
 @Versions
@@ -44,22 +61,43 @@ public static class User {
     @Version({"v2"})
     private Map<String, School> domains = new HashMap<>();
 }
-```
 
-#### Controller
-```java
-@RestController
-public static class TestController {
-    @Versioner("v1")
-    @GetMapping("/test/v1")
-    public User testV1(String id) {
-        return userService.getUser(id);
-    }
+@Data
+@Versions
+public class Address {
+    private String no = "999";
+    @Version("v2")
+    private String province = "Anhui";
+    @Version("v1")
+    private String city = "Hefei";
+    private School school = new School();
+}
 
-    @Versioner("v2")
-    @GetMapping("/test/v2")
-    public User testV2(String id) {
-        return userService.getUser(id);
+@Data
+@Versions
+public class School {
+    private String grade = "1";
+    @Version("v1")
+    private String teacher = "lucy";
+    @Version("v2")
+    private String master = "eric";
+}
+
+@Data
+@Versions
+public class Hobby {
+    private String name;
+    @Version("v1")
+    private String type;
+    @Version("v2")
+    private Integer level;
+    @Version("v1")
+    private School school = new School();
+
+    public Hobby(String name, String type, Integer level){
+        this.name = name;
+        this.type = type;
+        this.level = level;
     }
 }
 ```
