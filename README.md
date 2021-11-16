@@ -1,7 +1,13 @@
 ### Quick Start
 
 - [Download By Maven Center](https://search.maven.org/search?q=g:io.github.thebesteric.framework.versioner)
-
+### 配置
+```yaml
+sourceflag:
+  versioner:
+    enable: true # 是否启用
+    app-version-name: x-app-version # 指定请求头或请求参数中的版本 key，后面可以从 VersionContext 中获取
+```
 ### 注解的使用
 - `@EnableVersioner`: 开启版本控制
 - `@Versioner`: 作用于 Controller 层的请求方法上
@@ -188,9 +194,9 @@ public class Hobby {
 }
 ```
 
-### VersionHelp
-> 直接使用 VersionHelp 类，可以在代码内部完成版本控制
-> `VersionHelper.excludes("xxx", "yyy");` 针对所有请求进行版本控制
+### VersionHelper
+> 直接使用 VersionHelper 类，可以在代码内部完成版本控制  
+> `VersionHelper.excludes("xxx", "yyy");` 针对所有请求进行版本控制  
 > `VersionHelper.excludesWithUri("/xxx/xxx", "xxx", "yyy");` 针对所有指定请求进行版本控制
 
 ```java
@@ -211,3 +217,9 @@ public class UserService {
     }
 }
 ```
+
+### VersionContext
+> 直接使用 VersionContext 类，可以获取当前版本信息，URI、客户端版本信息  
+> `VersionContext.getVersion()` 获取当前方法版本  
+> `VersionContext.getUri()` 获取当前访问 URI  
+> `VersionContext.getUri()` 获取当前客户端版本

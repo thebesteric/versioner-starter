@@ -21,3 +21,7 @@
   - 支持 Collections 集合
   - 代码优化，去除 javafx.util.Pair 类
   - 添加 VersionHelp 类，可以在代码内定义版本控制
+
+- v1.0.4
+  - 支持获取客户度版本信息
+  - 代码优化，修复已知问题
