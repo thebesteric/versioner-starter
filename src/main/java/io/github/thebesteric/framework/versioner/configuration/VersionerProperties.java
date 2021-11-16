@@ -13,4 +13,7 @@ public class VersionerProperties {
 
     /** 总开关 */
     private boolean enable = true;
+
+    /** 客户端版本 */
+    private String appVersionName = "x-app-version";
 }

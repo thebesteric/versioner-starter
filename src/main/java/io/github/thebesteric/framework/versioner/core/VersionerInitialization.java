@@ -1,5 +1,6 @@
 package io.github.thebesteric.framework.versioner.core;
 
+import io.github.thebesteric.framework.versioner.configuration.VersionerProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +23,10 @@ public class VersionerInitialization implements SmartLifecycle, ApplicationConte
     @Override
     public void start() {
         this.isRunning = true;
-        log.info("Versioner is running");
+        VersionerProperties properties = this.applicationContext.getBean(VersionerProperties.class);
+        if (properties.isEnable()) {
+            log.info("Versioner is running");
+        }
     }
 
     @Override

@@ -1,6 +1,9 @@
 package io.github.thebesteric.framework.versioner.core;
 
 import lombok.Data;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class VersionContext {
 
@@ -26,8 +29,21 @@ public class VersionContext {
         context.remove();
     }
 
+    public static String getAppVersion() {
+        return context.get().getAppVersion();
+    }
+
+    public static void setAppVersion(String appVersionName, HttpServletRequest request) {
+        String appVersion = request.getHeader(appVersionName);
+        if (!StringUtils.hasLength(appVersion)) {
+            appVersion = request.getParameter(appVersionName);
+        }
+        context.get().setAppVersion(appVersion);
+    }
+
     @Data
     private static class Context {
+        private String appVersion;
         private String version;
         private String uri;
     }

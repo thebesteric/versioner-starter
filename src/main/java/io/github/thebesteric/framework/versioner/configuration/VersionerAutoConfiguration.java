@@ -26,12 +26,12 @@ public class VersionerAutoConfiguration implements WebMvcConfigurer {
 
     @Bean
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public FilterRegistrationBean filterRegister(VersionManager versionManager) {
+    public FilterRegistrationBean filterRegister(VersionManager versionManager, VersionerProperties properties) {
         FilterRegistrationBean frBean = new FilterRegistrationBean();
         frBean.setName(FILTER_NAME);
         frBean.setOrder(FILTER_ORDER);
         frBean.addUrlPatterns(FILTER_URL_PATTERNS);
-        frBean.setFilter(new VersionerFilter(versionManager));
+        frBean.setFilter(new VersionerFilter(versionManager, properties));
         return frBean;
     }
 

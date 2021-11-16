@@ -3,6 +3,7 @@ package io.github.thebesteric.framework.versioner.filter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.thebesteric.framework.versioner.configuration.VersionerProperties;
 import io.github.thebesteric.framework.versioner.core.VersionContext;
 import io.github.thebesteric.framework.versioner.core.VersionHelper;
 import io.github.thebesteric.framework.versioner.core.VersionManager;
@@ -27,13 +28,26 @@ public class VersionerFilter implements Filter {
 
     private final VersionManager versionManager;
 
+    private final VersionerProperties properties;
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        if (!properties.isEnable()) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestURI = request.getRequestURI();
-        // set uri into context
+        // set uri into Context
         VersionContext.setURI(requestURI);
+        // set appVersion into Context
+        VersionContext.setAppVersion(properties.getAppVersionName(), request);
+        // set version into Context
+        VersionManager.VersionInfo versionInfo = versionManager.get(requestURI);
+        VersionContext.setVersion(versionInfo != null ? versionInfo.getVersion() : null);
 
         ResponseWrapper responseWrapper = new ResponseWrapper(response);
         filterChain.doFilter(request, responseWrapper);
@@ -42,11 +56,8 @@ public class VersionerFilter implements Filter {
         String origin = new String(content, StandardCharsets.UTF_8);
         JsonObject jsonObject = JsonUtils.toJsonNode(origin);
 
-        VersionManager.VersionInfo versionInfo = versionManager.get(requestURI);
         // set @Version annotation on Controller
         if (versionInfo != null) {
-            // set version into context
-            VersionContext.setVersion(versionInfo.getVersion());
             try {
                 String key = versionInfo.getKey();
                 if (StringUtils.hasLength(key)) {
