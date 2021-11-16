@@ -47,6 +47,7 @@ public class App {
             domains.put("s2", new School());
             user.setDomains(domains);
             System.out.println("Version = " + VersionContext.getVersion());
+            System.out.println("AppVersion = " + VersionContext.getAppVersion());
             return user;
         }
 
@@ -71,6 +72,7 @@ public class App {
             domains.put("s2", new School());
             user.setDomains(domains);
             System.out.println("Version = " + VersionContext.getVersion());
+            System.out.println("AppVersion = " + VersionContext.getAppVersion());
             return user;
         }
 
@@ -95,6 +97,7 @@ public class App {
             domains.put("s2", new School());
             user.setDomains(domains);
             System.out.println("Version = " + VersionContext.getVersion());
+            System.out.println("AppVersion = " + VersionContext.getAppVersion());
             return user;
         }
 
@@ -118,6 +121,7 @@ public class App {
             domains.put("s2", new School());
             user.setDomains(domains);
             System.out.println("Version = " + VersionContext.getVersion());
+            System.out.println("AppVersion = " + VersionContext.getAppVersion());
             return R.success(user);
         }
 
@@ -146,6 +150,7 @@ public class App {
             domains.put("s2", new School());
             user.setDomains(domains);
             System.out.println("Version = " + VersionContext.getVersion());
+            System.out.println("AppVersion = " + VersionContext.getAppVersion());
             return R.success(user);
         }
 
@@ -174,6 +179,7 @@ public class App {
             domains.put("s2", new School());
             user.setDomains(domains);
             System.out.println("Version = " + VersionContext.getVersion());
+            System.out.println("AppVersion = " + VersionContext.getAppVersion());
             return R.success(user);
         }
 

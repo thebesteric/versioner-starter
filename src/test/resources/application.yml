@@ -1,0 +1,4 @@
+sourceflag:
+  versioner:
+    enable: true
+    app-version-name: x-version
